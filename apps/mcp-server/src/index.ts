@@ -1,29 +1,23 @@
+import { serve } from "@hono/node-server";
+import { Hono } from "hono";
+import { StreamableHTTPTransport } from "@hono/mcp";
 import { env } from "./lib/env.js";
-import { redis } from "./lib/redis.js";
-import { vectorIndex } from "./lib/vector.js";
 import { logger } from "./lib/logger.js";
+import { createMcpServer } from "./mcp/server.js";
 
-logger.info("Env loaded");
-logger.info(`PORT: ${env.PORT}`);
+const app = new Hono();
+const mcpServer = createMcpServer();
+const transport = new StreamableHTTPTransport();
 
-const testKey = "contextvault:smoketest";
-await redis.set(testKey, { hello: "world", ts: Date.now() });
-const value = await redis.get(testKey);
-logger.info({ value }, "Redis round-trip successful");
-await redis.del(testKey);
+app.get("/healthz", (c) => c.json({ status: "ok" }));
 
-await vectorIndex.upsert({
-  id: "smoketest-1",
-  data: "This is a test memory about coffee and mornings.",
-  metadata: { type: "test" },
+app.all("/mcp", async (c) => {
+  if (!mcpServer.isConnected()) {
+    await mcpServer.connect(transport);
+  }
+  return transport.handleRequest(c);
 });
 
-const results = await vectorIndex.query({
-  data: "What do I drink in the morning?",
-  topK: 1,
-  includeMetadata: true,
+serve({ fetch: app.fetch, port: env.PORT }, (info) => {
+  logger.info(`ContextVault MCP server listening on port ${info.port}`);
 });
-
-logger.info({ results }, "Vector round-trip successful");
-
-await vectorIndex.delete("smoketest-1");
