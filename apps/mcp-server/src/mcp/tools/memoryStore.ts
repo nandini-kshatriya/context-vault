@@ -12,7 +12,7 @@ export async function storeMemory(input: MemoryStoreInputT): Promise<{ id: strin
   await redis.hset(`memory:${id}`, {
     content: parsed.content,
     userId: parsed.userId,
-    tags: JSON.stringify(parsed.tags ?? []),
+    tags: parsed.tags ?? [],
     source: "manual",
     createdAt: now,
     updatedAt: now,
