@@ -5,12 +5,18 @@ import {
   MemoryRetrieveInput,
   MemoryUpdateInput,
   MemoryDeleteInput,
+  DocumentIngestInput,
+  DocumentSearchInput,
+  ContextBuildInput,
 } from "@contextvault/schemas";
 import { storeMemory } from "./tools/memoryStore.js";
 import { searchMemories } from "./tools/memorySearch.js";
 import { retrieveMemory } from "./tools/memoryRetrieve.js";
 import { updateMemory } from "./tools/memoryUpdate.js";
 import { deleteMemory } from "./tools/memoryDelete.js";
+import { ingestDocument } from "./tools/documentIngest.js";
+import { searchDocuments } from "./tools/documentSearch.js";
+import { buildContext } from "./tools/contextBuild.js";
 import { logger } from "../lib/logger.js";
 
 export function createMcpServer() {
@@ -89,6 +95,51 @@ export function createMcpServer() {
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       } catch (err) {
         logger.error({ err }, "memory_delete failed");
+        throw err;
+      }
+    }
+  );
+
+  server.tool(
+    "document_ingest",
+    "Ingest a document: chunks the content, stores it, and indexes chunks for semantic search.",
+    DocumentIngestInput.shape,
+    async (input) => {
+      try {
+        const result = await ingestDocument(input);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      } catch (err) {
+        logger.error({ err }, "document_ingest failed");
+        throw err;
+      }
+    }
+  );
+
+  server.tool(
+    "document_search",
+    "Semantically search a user's ingested document chunks.",
+    DocumentSearchInput.shape,
+    async (input) => {
+      try {
+        const result = await searchDocuments(input);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      } catch (err) {
+        logger.error({ err }, "document_search failed");
+        throw err;
+      }
+    }
+  );
+
+  server.tool(
+    "context_build",
+    "Build a merged, ranked context block from a user's memories and document chunks for a given query.",
+    ContextBuildInput.shape,
+    async (input) => {
+      try {
+        const result = await buildContext(input);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      } catch (err) {
+        logger.error({ err }, "context_build failed");
         throw err;
       }
     }
