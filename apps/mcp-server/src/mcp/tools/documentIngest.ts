@@ -18,6 +18,7 @@ export async function ingestDocument(
     sourceUrl: parsed.sourceUrl ?? "",
     createdAt: now,
   });
+  await redis.sadd(`user:${parsed.userId}:documents`, documentId);
 
   const chunks = chunkText(parsed.content);
   const ns = vectorIndex.namespace(parsed.userId);
