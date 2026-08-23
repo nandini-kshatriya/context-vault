@@ -11,6 +11,7 @@ import memoriesRoute from "./rest/routes/memories.js";
 import documentsRoute from "./rest/routes/documents.js";
 import searchRoute from "./rest/routes/search.js";
 import contextRoute from "./rest/routes/context.js";
+import analyticsRoute from "./rest/routes/analytics.js";
 
 const app = new Hono();
 const mcpServer = createMcpServer();
@@ -37,6 +38,7 @@ app.route("/api/memories", memoriesRoute);
 app.route("/api/documents", documentsRoute);
 app.route("/api/search", searchRoute);
 app.route("/api/context", contextRoute);
+app.route("/api/analytics", analyticsRoute);
 
 app.get("/api/events/stream", (c) => {
   return streamSSE(c, async (stream) => {

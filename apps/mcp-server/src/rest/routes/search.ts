@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { MemorySearchInput } from "@contextvault/schemas";
 import { searchMemories } from "../../mcp/tools/memorySearch.js";
 import { logger } from "../../lib/logger.js";
+import { withEvent } from "../../lib/withEvent.js";
 
 const search = new Hono();
 
@@ -10,7 +11,7 @@ search.post("/", async (c) => {
 
   try {
     const parsed = MemorySearchInput.parse(body);
-    const result = await searchMemories(parsed);
+    const result = await withEvent("memory_search", parsed.userId, () => searchMemories(parsed));
     return c.json(result);
   } catch (err) {
     logger.error({ err }, "POST /api/search failed");

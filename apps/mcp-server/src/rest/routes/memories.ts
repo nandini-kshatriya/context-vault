@@ -5,6 +5,7 @@ import { retrieveMemory } from "../../mcp/tools/memoryRetrieve.js";
 import { updateMemory } from "../../mcp/tools/memoryUpdate.js";
 import { deleteMemory } from "../../mcp/tools/memoryDelete.js";
 import { logger } from "../../lib/logger.js";
+import { withEvent } from "../../lib/withEvent.js";
 
 const memories = new Hono();
 
@@ -15,7 +16,9 @@ memories.get("/", async (c) => {
   if (!userId) return c.json({ error: "userId is required" }, 400);
 
   try {
-    const result = await listMemories(userId, page, pageSize);
+    const result = await withEvent("memory_list", userId, () =>
+      listMemories(userId, page, pageSize)
+    );
     return c.json(result);
   } catch (err) {
     logger.error({ err }, "GET /api/memories failed");
@@ -30,7 +33,7 @@ memories.get("/:id", async (c) => {
 
   try {
     const parsed = MemoryRetrieveInput.parse({ id, userId });
-    const result = await retrieveMemory(parsed);
+    const result = await withEvent("memory_retrieve", userId, () => retrieveMemory(parsed));
     return c.json(result);
   } catch (err) {
     logger.error({ err }, "GET /api/memories/:id failed");
@@ -44,7 +47,7 @@ memories.patch("/:id", async (c) => {
 
   try {
     const parsed = MemoryUpdateInput.parse({ id, ...body });
-    const result = await updateMemory(parsed);
+    const result = await withEvent("memory_update", body.userId, () => updateMemory(parsed));
     return c.json(result);
   } catch (err) {
     logger.error({ err }, "PATCH /api/memories/:id failed");
@@ -59,7 +62,7 @@ memories.delete("/:id", async (c) => {
 
   try {
     const parsed = MemoryDeleteInput.parse({ id, userId });
-    const result = await deleteMemory(parsed);
+    const result = await withEvent("memory_delete", userId, () => deleteMemory(parsed));
     return c.json(result);
   } catch (err) {
     logger.error({ err }, "DELETE /api/memories/:id failed");

@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { ContextBuildInput } from "@contextvault/schemas";
 import { buildContext } from "../../mcp/tools/contextBuild.js";
 import { logger } from "../../lib/logger.js";
+import { withEvent } from "../../lib/withEvent.js";
 
 const context = new Hono();
 
@@ -10,7 +11,7 @@ context.post("/", async (c) => {
 
   try {
     const parsed = ContextBuildInput.parse(body);
-    const result = await buildContext(parsed);
+    const result = await withEvent("context_build", parsed.userId, () => buildContext(parsed));
     return c.json(result);
   } catch (err) {
     logger.error({ err }, "POST /api/context failed");

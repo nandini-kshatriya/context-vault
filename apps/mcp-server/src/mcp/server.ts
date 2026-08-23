@@ -9,6 +9,7 @@ import {
   DocumentIngestInput,
   DocumentSearchInput,
   ContextBuildInput,
+  AnalyticsSummaryInput,
 } from "@contextvault/schemas";
 import { storeMemory } from "./tools/memoryStore.js";
 import { searchMemories } from "./tools/memorySearch.js";
@@ -18,6 +19,7 @@ import { deleteMemory } from "./tools/memoryDelete.js";
 import { ingestDocument } from "./tools/documentIngest.js";
 import { searchDocuments } from "./tools/documentSearch.js";
 import { buildContext } from "./tools/contextBuild.js";
+import { analyticsSummary } from "./tools/analyticsSummary.js";
 import { emitEvent } from "../lib/events.js";
 import { logger } from "../lib/logger.js";
 
@@ -122,6 +124,13 @@ export function createMcpServer() {
     "Build a merged, ranked context block from a user's memories and document chunks for a given query.",
     ContextBuildInput.shape,
     buildContext
+  );
+
+  registerTool(
+    "analytics_summary",
+    "Get aggregate call statistics: total calls, error rate, average latency, and top tools.",
+    AnalyticsSummaryInput.shape,
+    analyticsSummary
   );
 
   return server;
