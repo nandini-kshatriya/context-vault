@@ -37,6 +37,25 @@ export interface ContextBuildResult {
   sources: ContextSource[];
 }
 
+export interface McpEvent {
+  toolName: string;
+  status: "success" | "error";
+  durationMs: number;
+  userId?: string;
+  timestamp: number;
+  errorMessage?: string;
+}
+
+export interface AnalyticsData {
+  totalCalls: number;
+  errorRate: number;
+  avgLatencyMs: number;
+  p50LatencyMs: number;
+  p95LatencyMs: number;
+  topTools: { toolName: string; count: number }[];
+  callsOverTime: { bucket: string; count: number }[];
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
@@ -89,4 +108,7 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ query, userId, maxItems }),
     }),
+
+  getAnalytics: (userId?: string) =>
+    request<AnalyticsData>(`/api/analytics${userId ? `?userId=${encodeURIComponent(userId)}` : ""}`),
 };

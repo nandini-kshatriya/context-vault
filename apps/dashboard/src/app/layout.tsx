@@ -27,6 +27,8 @@ const navItems = [
   { href: "/", label: "Overview" },
   { href: "/memories", label: "Memories" },
   { href: "/search", label: "Search" },
+  { href: "/monitor", label: "Monitor" },
+  { href: "/analytics", label: "Analytics" },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
