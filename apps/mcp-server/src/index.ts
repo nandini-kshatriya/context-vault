@@ -7,6 +7,9 @@ import { env } from "./lib/env.js";
 import { redis } from "./lib/redis.js";
 import { logger } from "./lib/logger.js";
 import { createMcpServer } from "./mcp/server.js";
+import { requireApiKey } from "./rest/middleware/auth.js";
+import { rateLimitMiddleware } from "./rest/middleware/rateLimit.js";
+import { generateApiKey } from "./lib/apiKeys.js";
 import memoriesRoute from "./rest/routes/memories.js";
 import documentsRoute from "./rest/routes/documents.js";
 import searchRoute from "./rest/routes/search.js";
@@ -14,6 +17,10 @@ import contextRoute from "./rest/routes/context.js";
 import analyticsRoute from "./rest/routes/analytics.js";
 
 const app = new Hono();
+app.onError((err, c) => {
+  logger.error({ err, path: c.req.path }, "Unhandled request error");
+  return c.json({ error: "Internal server error" }, 500);
+});
 const mcpServer = createMcpServer();
 const transport = new StreamableHTTPTransport();
 
@@ -25,7 +32,20 @@ app.use(
   })
 );
 
+app.use("/api/*", rateLimitMiddleware);
+app.use("/api/*", requireApiKey);
+
 app.get("/healthz", (c) => c.json({ status: "ok" }));
+
+app.post("/api/dev/generate-key", async (c) => {
+  if (env.NODE_ENV === "production") {
+    return c.json({ error: "Not available in production" }, 403);
+  }
+  const body = await c.req.json().catch(() => ({}));
+  const userId = body.userId || "dev-user";
+  const key = await generateApiKey(userId);
+  return c.json({ apiKey: key, userId });
+});
 
 app.all("/mcp", async (c) => {
   if (!mcpServer.isConnected()) {
