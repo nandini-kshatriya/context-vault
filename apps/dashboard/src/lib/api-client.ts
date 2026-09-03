@@ -56,10 +56,16 @@ export interface AnalyticsData {
   callsOverTime: { bucket: string; count: number }[];
 }
 
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...(API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {}),
+      ...options?.headers,
+    },
   });
   if (!res.ok) {
     const body = await res.text();
