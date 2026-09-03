@@ -1,0 +1,29 @@
+services:
+  mcp-server:
+    build:
+      context: ..
+      dockerfile: apps/mcp-server/Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - ../.env
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  dashboard:
+    build:
+      context: ..
+      dockerfile: apps/dashboard/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://mcp-server:3001
+      - NEXT_PUBLIC_API_KEY=cv_bed421b8bc9179f551a05c659f213c9ab6942786d3ce5410
+    depends_on:
+      - mcp-server
