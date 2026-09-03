@@ -137,7 +137,7 @@ export default function AnalyticsPage() {
                     cx="50%"
                     cy="50%"
                     outerRadius={90}
-                    label={(entry) => entry.toolName}
+                    label={(entry: any) => entry.toolName ?? ""}
                   >
                     {data.topTools.map((_, i) => (
                       <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
