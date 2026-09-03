@@ -27,7 +27,7 @@ const transport = new StreamableHTTPTransport();
 app.use(
   "/api/*",
   cors({
-    origin: env.NODE_ENV === "production" ? "https://REPLACE_WITH_DASHBOARD_DOMAIN" : "http://localhost:3000",
+    origin: env.NODE_ENV === "production" ? "https://context-vault-rho.vercel.app" : "http://localhost:3000",
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   })
 );
