@@ -33,7 +33,12 @@ app.use(
 );
 
 app.use("/api/*", rateLimitMiddleware);
-app.use("/api/*", requireApiKey);
+app.use("/api/*", async (c, next) => {
+  if (c.req.path === "/api/events/stream") {
+    return next(); // SSE endpoint: browsers' native EventSource can't send auth headers
+  }
+  return requireApiKey(c, next);
+});
 
 app.get("/healthz", (c) => c.json({ status: "ok" }));
 
