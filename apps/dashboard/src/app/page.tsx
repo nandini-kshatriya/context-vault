@@ -74,14 +74,14 @@ function useTypewriter(text: string, trigger: boolean, speed = 20) {
 
 function AddScene() {
   const message =
-    "Remember: I prefer dark roast coffee in the mornings, and I'm on the design team.";
+    "We're building an AI platform for internal teams. It needs secure tool access, persistent context, and reliable retrieval across conversations.";
   const typed = useTypewriter(message, true, 18);
   const done = typed.length === message.length;
 
   return (
     <div className="flex flex-col gap-4 p-8">
       <div className="rounded-2xl bg-[var(--color-text)] p-5 text-[var(--color-bg)] shadow-xl">
-        <p className="min-h-[3em] text-sm leading-relaxed">
+        <p className="min-h-[4.5em] text-sm leading-relaxed">
           &ldquo;{typed}
           <span className="ml-0.5 inline-block h-[1em] w-[2px] translate-y-0.5 bg-[var(--color-violet)] align-middle" />
           &rdquo;
@@ -102,14 +102,15 @@ function AddScene() {
 }
 
 function LearnScene() {
-  const label = "Extracting structured memory…";
+  const label = "Extracting structured context…";
   const typedLabel = useTypewriter(label, true, 22);
   const labelDone = typedLabel.length === label.length;
 
   const chips = [
-    ["Preference", "Dark roast coffee"],
-    ["Team", "Design"],
-    ["Source", "manual"],
+    ["Project", "Internal AI Platform"],
+    ["Requirements", "Secure Tool Access · Persistent Context"],
+    ["Capability", "Contextual Retrieval"],
+    ["Audience", "Internal Teams"],
   ];
 
   return (
@@ -143,7 +144,7 @@ function LearnScene() {
 }
 
 function RetrieveScene() {
-  const question = "What should I know before my first day?";
+  const question = "What does our AI platform need to support?";
   const typedQuestion = useTypewriter(question, true, 22);
   const questionDone = typedQuestion.length === question.length;
 
@@ -155,10 +156,10 @@ function RetrieveScene() {
   }, [questionDone]);
 
   const response =
-    "Office hours are 9–6, you're on the design team, and I've noted dark roast coffee for the welcome kit.";
+    "It needs secure tool access, persistent context, and reliable retrieval across conversations.";
   const typedResponse = useTypewriter(response, showChips, 16);
 
-  const chips = ["Onboarding Guide", "Dark roast coffee", "Design team"];
+  const chips = ["Secure Tool Access", "Persistent Context", "Contextual Retrieval"];
 
   return (
     <div className="flex flex-col gap-4 p-8">
@@ -228,7 +229,7 @@ export default function Home() {
 
   return (
     <div>
-            <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
+      <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-violet)] opacity-75" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--color-violet)]" />
@@ -236,7 +237,7 @@ export default function Home() {
         AI memory & context layer
       </div>
 
-            <h1 className="mb-10 min-h-[1.4em] max-w-none whitespace-nowrap font-[family-name:var(--font-display)] text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+      <h1 className="mb-10 min-h-[1.4em] max-w-none whitespace-nowrap font-[family-name:var(--font-display)] text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
         Add anything. ContextVault learns{" "}
         <span className="text-[var(--color-violet)]">{typed}</span>
         <span className="ml-1 inline-block h-[0.9em] w-[3px] translate-y-1 animate-pulse bg-[var(--color-violet)]" />
